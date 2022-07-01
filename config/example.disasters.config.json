@@ -1,0 +1,39 @@
+{
+  "debug": true,
+  "trello": {
+    "url": "https://api.trello.com/1",
+    "key": "TRELLO_API_KEY",
+    "token": "TRELLO_API_TOKEN",
+    "boardId": "TRELLO_DISASTER_OVERVIEW_BOARD_ID"
+  },
+  "rwapi": {
+    "url": "https://api.reliefweb.int/v1",
+    "appname": "rwint-trello-connectors--disasters",
+    "preset": "reliefweb"
+  },
+  "labels": {
+    "Profile Update > 1 Week": "sky",
+    "Profile Update > 2 Weeks": "blue",
+    "Profile Update > 3 Weeks": "purple",
+    "Last Report > 1 Week": "yellow",
+    "Last Report > 1 Month": "orange",
+    "Last Report > 2 Months": "red"
+  },
+  "lists": [
+    {
+      "status": "draft",
+      "name": "Draft",
+      "position": 2
+    },
+    {
+      "status": "alert",
+      "name": "Alert",
+      "position": 3
+    },
+    {
+      "status": "ongoing",
+      "name": "Ongoing",
+      "position": 4
+    }
+  ]
+}

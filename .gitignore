@@ -1,0 +1,9 @@
+# Config, keep examples.
+!/config/
+/config/*
+!/config/example.*
+
+# Node.
+/node_modules
+/v8-*
+

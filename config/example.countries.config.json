@@ -1,0 +1,26 @@
+{
+  "debug": true,
+  "trello": {
+    "url": "https://api.trello.com/1",
+    "key": "TRELLO_API_KEY",
+    "token": "TRELLO_API_TOKEN",
+    "boardId": "TRELLO_COUNTRY_OVERVIEW_BOARD_ID"
+  },
+  "rwapi": {
+    "url": "https://api.reliefweb.int/v1",
+    "appname": "rwint-trello-connectors--countries",
+    "preset": "reliefweb"
+  },
+  "labels": {
+    "Ongoing Situation": "pink",
+    "Profile Checked": "purple",
+    "Profile Update > 1 Week": "sky",
+    "Profile Update > 2 Weeks": "blue",
+    "Profile Update > 3 Weeks": "purple"
+  },
+  "statuses": {
+    "current": "ongoing",
+    "ongoing": "ongoing",
+    "normal": "normal"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "ReliefWeb Trello Connectors",
+  "version": "0.0.0",
+  "description": "NodeJs scripts (with no dependencies) used to manage ReliefWeb Trello boards",
+  "repository": "git@github.com:UN-OCHA/rwint-trello-connectors.git",
+  "author": "UN OCHA",
+  "license": "GPL-2.0",
+  "scripts": {
+    "test": "eslint src",
+    "install-git-hooks": "test -d .git && git config core.hooksPath git-hooks || exit 0"
+  },
+  "engines": {
+    "node": "^18",
+    "npm": "^8"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "eslint": "^7.23.0"
+  }
+}
