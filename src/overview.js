@@ -5,75 +5,24 @@ function OverviewManager(config, logger, trelloClient, date) {
   this.config = config;
   this.logger = logger;
   this.trelloClient = trelloClient;
-  this.date = date;
 
   this.overviewBoard = null;
   this.boards = null;
   this.projects = null;
-
-  // Current date.
-  this.currentDate = this.date.format('D MMM YYYY');
 
   /**
    * Main process function.
    */
   this.process = async () => {
     try {
-      await this.getOverviewBoard();
-      await this.getBoards();
-      await this.updateBoard();
+      if (this.getBoards()) {
+        await this.prepare();
+        await this.update();
+      }
     }
     catch (exception) {
       this.logger.error(exception);
     }
-  };
-
-  /**
-   * Retrieve the other boards.
-   */
-  this.getBoards = async () => {
-    const data = {
-      labels: 'all',
-      label_fields: 'name,color',
-      labels_limit: 1000,
-      lists: 'open',
-      list_fields: 'name',
-      cards: 'open',
-      card_fields: 'name,labels,idList,desc',
-      card_attachments: 'true',
-      card_attachment_fields: 'url,name',
-      fields: 'name'
-    };
-
-    const result = await this.trelloClient.get('/boards', data);
-    if (!result) {
-      throw 'Unable to retrieve the Trello board data';
-    }
-    this.boards = result;
-  };
-
-  /**
-   * Retrieve the Trello board data.
-   */
-  this.getOverviewBoard = async () => {
-    const data = {
-      labels: 'all',
-      label_fields: 'name,color',
-      labels_limit: 1000,
-      lists: 'open',
-      list_fields: 'name',
-      cards: 'open',
-      card_fields: 'name,labels,idList,desc',
-      card_attachments: 'true',
-      card_attachment_fields: 'url,name',
-      fields: 'name'
-    };
-
-    const result = await this.trelloClient.get('/boards/' + this.config.trello.boardId, data);
-    if (!result) {
-      throw 'Unable to retrieve the Trello board data';
-    }
-    this.overviewBoard = result;
   };
 
   /**
@@ -90,7 +39,7 @@ function OverviewManager(config, logger, trelloClient, date) {
   /**
    * Get doer name.
    */
-   this.getDoerName = async (label) => {
+  this.getDoerName = async (label) => {
     if (label.indexOf(this.config.doerPrefix) === 0) {
       return label.substring(this.config.doerPrefix.length);
     }
@@ -106,17 +55,17 @@ function OverviewManager(config, logger, trelloClient, date) {
     if (action.Doers.length > 0) {
       doers = '**' + action.Doers.join(', ') + '**';
     }
-  
+
     let parts = [
       action.Link,
       doers,
       action.Status
     ];
-  
+
     if (action.Due != '') {
-      parts.push(parts, '*' + action.Due + '*')
+      parts.push(parts, '*' + action.Due + '*');
     }
-  
+
     return parts.join(' - ');
   };
 
@@ -131,11 +80,11 @@ function OverviewManager(config, logger, trelloClient, date) {
       let projectName = this.getProjectName(label.name);
       if (projectName != '') {
         actions[projectName] = {
-          "link": card.ShortUrl,
-          "status": list,
-          "due": card.Due,
-          "complete": false,
-        }
+          link: card.ShortUrl,
+          status: list,
+          due: card.Due,
+          complete: false,
+        };
       }
 
       let doerName = this.getDoerName(label.name);
@@ -164,9 +113,9 @@ function OverviewManager(config, logger, trelloClient, date) {
         let projectName = this.getProjectName(label.name);
         if (projectName != '') {
           this.projects[projectName] = {
-            "card": card,
-            "actions": []
-          }
+            card: card,
+            actions: []
+          };
         }
       }
     }
@@ -182,11 +131,11 @@ function OverviewManager(config, logger, trelloClient, date) {
 
     for (const board of this.boards) {
       let lists = {};
-      for (const list in board.lists) {
+      for (const list of board.lists) {
         lists[list.id] = list.name;
       }
 
-      for (const card in board.card) {
+      for (const card of board.card) {
         let actions = this.getActions(card, lists[card.idList]);
         for (const [name, action] of actions) {
           if (projects[name]) {
@@ -206,8 +155,8 @@ function OverviewManager(config, logger, trelloClient, date) {
   this.addCheckItem = async (checklistId, action) => {
     try {
       await this.trelloClient.post('/checklists/' + checklistId + '/checkItems', {
-        "name": action.name,
-        "checked": action.complete
+        name: action.name,
+        checked: action.complete
       });
       this.logger.debug('Added checkitem ' + action.name);
     }
@@ -219,13 +168,13 @@ function OverviewManager(config, logger, trelloClient, date) {
   /**
    * Update an action checklist item.
    */
-   this.updateCheckItem = async (cardId, checklistId, id, action) => {
+  this.updateCheckItem = async (cardId, checklistId, id, action) => {
     try {
       await this.trelloClient.post('/cards/' + cardId + '/checklist/' + checklistId + '/checkItem/' + id, {
-        "idChecklistCurrent":  checklistId,
-        "idCheckItem":  id,
-        "name":  action.Name,
-        "state":  action.Complete,
+        idChecklistCurrent:  checklistId,
+        idCheckItem:  id,
+        name:  action.Name,
+        state:  action.Complete,
       });
       this.logger.debug('Updated checkitem ' + id);
     }
@@ -237,16 +186,159 @@ function OverviewManager(config, logger, trelloClient, date) {
   /**
    * Delete an action checklist item.
    */
-   this.deleteCheckItem = async (checklistId, id) => {
+  this.deleteCheckItem = async (checklistId, id) => {
     try {
       await this.trelloClient.delete('/checklists/' + checklistId + '/checkItems/' + id, {
-        "idCheckItem":  id,
+        idCheckItem:  id,
       });
       this.logger.debug('Deleted checkitem ' + id);
     }
     catch (exception) {
       this.logger.error('Unable to delete checkitem ' + id);
     }
+  };
+
+  /**
+   * Add a board checklist.
+   */
+  this.addChecklist = async (cardId, name, actions) => {
+    try {
+      const checklistId = await this.trelloClient.post('/checklists', {
+        idCart:  cardId,
+        name:  name,
+      });
+      this.logger.debug('Added checklist ' + name);
+
+      for (const action of actions) {
+        this.addCheckItem(checklistId, action);
+      }
+    }
+    catch (exception) {
+      this.logger.error('Unable to add checklist ' + name + ' to card ' + cardId);
+    }
+  };
+
+  /**
+   * Update board checklist: add, update or remove actions.
+   */
+  this.updateChecklist = (cardId, checklist, actions) => {
+    let items = new Map();
+    for (const action of actions) {
+      items.set(action.link, action);
+    }
+
+    for (const checkitem of checklist.checkItems) {
+      if (checkitem.name.length > 29) {
+        checkitem.name = checkitem.name.slice(0, 29);
+        if (items.has(checkitem.name)) {
+          let action = items.get(checkitem.name);
+          if (action.name != checkitem.name) {
+            this.updateCheckItem(cardId, checklist.id, checkitem.id, action);
+            items.delete(checkitem.name);
+            continue;
+          }
+        }
+      }
+      else {
+        this.deleteCheckItem(checklist.id, checkitem.id);
+      }
+    }
+
+    for (const action of items) {
+      this.addCheckItem(checklist.id, action);
+    }
+  };
+
+  /**
+   * Delete a board checklist.
+   */
+  this.deleteChecklist = async (id) => {
+    try {
+      await this.trelloClient.delete('/checklists/' + id);
+      this.logger.debug('Deleted checklist ' + id);
+    }
+    catch (exception) {
+      this.logger.error('Unable to delete checklist ' + id);
+    }
+  };
+
+  /**
+   * Update the Overview board.
+   */
+  this.update = async () => {
+    let boards = new Map();
+    for (const board of this.boards) {
+      boards.set(board.name, true);
+    }
+
+    for (const project of this.projects) {
+      let card = project.card;
+      for (const checklist of card.checklist) {
+        if (boards[checklist.name]) {
+          let actions = project.actions[checklist.name];
+          if (actions) {
+            this.updateChecklist(card.id, checklist, actions);
+            project.actions.delete(checklist.name);
+          }
+          else {
+            this.deleteChecklist(checklist.id);
+          }
+        }
+        else {
+          this.deleteChecklist(checklist.id);
+        }
+      }
+
+      for (const [checklistName, actions] of project.actions) {
+        this.addChecklist(card.id, checklistName, actions);
+      }
+    }
+  };
+
+  /**
+   * Retrieve board data.
+   */
+  this.getBoardData = async (board, checklists) => {
+    const data = {
+      filter: 'open',
+      fields: 'name,shortUrl,labels,idList,due',
+    };
+
+    if (checklists) {
+      date['checklists'] = 'all';
+    }
+
+    try {
+      board.cards = await this.trelloClient.get('/boards/' + board.id, data);
+      this.logger.debug('Loaded board ' + board.id);
+    }
+    catch (exception) {
+      this.logger.error('Unable to load board ' + board.id);
+    }
+  };
+
+  /**
+   * Retrieve organization boards.
+   */
+  this.getBoards = async () => {
+    const boards = await this.trelloClient.get('/organizations/reliefweb/boards', {
+      filter: 'open',
+      fields: 'id,name',
+      lists: 'open',
+    });
+
+    for (let board of boards) {
+      if (board.id == this.config.boardId) {
+        this.getBoardData(board, false);
+        this.overviewBoard = board;
+      }
+      else {
+        this.getBoardData(board, false);
+        this.boards.push(board);
+      }
+    }
+
+    return this.overviewBoard !== null;
   };
 
 }
