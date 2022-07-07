@@ -16,7 +16,7 @@ function OverviewManager(config, logger, trelloClient, date) {
   this.process = async () => {
     try {
       if (await this.getBoards()) {
-        await this.prepare();
+        this.prepare();
         await this.update();
       }
     }
