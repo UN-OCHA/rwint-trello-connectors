@@ -114,7 +114,7 @@ function OverviewManager(config, logger, trelloClient, date) {
         if (projectName != '') {
           this.projects[projectName] = {
             card: card,
-            actions: []
+            actions: new Map(),
           };
         }
       }
