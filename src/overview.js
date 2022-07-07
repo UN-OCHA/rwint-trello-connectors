@@ -59,7 +59,7 @@ function OverviewManager(config, logger, trelloClient, date) {
     let parts = [
       action.link,
       doers,
-      action.Status
+      action.status
     ];
 
     if (action.due != '') {
