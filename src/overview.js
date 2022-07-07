@@ -329,7 +329,7 @@ function OverviewManager(config, logger, trelloClient, date) {
 
     for (let board of boards) {
       if (board.id == this.config.trello.boardId) {
-        this.getBoardData(board, false);
+        await this.getBoardData(board, true);
         this.overviewBoard = board;
       }
       else {
