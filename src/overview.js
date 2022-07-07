@@ -107,7 +107,7 @@ function OverviewManager(config, logger, trelloClient, date) {
   /**
    * Get Overview board projects.
    */
-  this.getProjects = async () => {
+  this.getProjects = () => {
     for (const card of this.overviewBoard.cards) {
       for (const label of card.labels) {
         let projectName = this.getProjectName(label.name);
