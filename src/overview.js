@@ -233,7 +233,7 @@ function OverviewManager(config, logger, trelloClient, date) {
         if (items.has(checkitem.name)) {
           let action = items.get(checkitem.name);
           if (action.name != checkitem.name) {
-            this.updateCheckItem(cardId, checklist.id, checkitem.id, action);
+           await this.updateCheckItem(cardId, checklist.id, checkitem.id, action);
             items.delete(checkitem.name);
             continue;
           }
