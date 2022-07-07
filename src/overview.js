@@ -305,7 +305,7 @@ function OverviewManager(config, logger, trelloClient, date) {
     };
 
     if (checklists) {
-      date['checklists'] = 'all';
+      data['checklists'] = 'all';
     }
 
     try {
