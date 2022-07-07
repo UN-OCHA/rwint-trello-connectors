@@ -98,10 +98,10 @@ function OverviewManager(config, logger, trelloClient, date) {
     }
 
     // @todo removing actionId will break code.
-    for (let [actionId, action] of actions) {
-      this.logger.debug('Processing action ' + action.name + ' (' + actionId + ')');
+    for (let action of actions.values()) {
       action.doers = doers;
       action.name = this.getActionName(action);
+      this.logger.debug('Processing action ' + action.name);
       if (list.toLowerCase().indexOf('done') != -1) {
         action.complete = true;
       }
@@ -114,8 +114,8 @@ function OverviewManager(config, logger, trelloClient, date) {
    * Get Overview board projects.
    */
   this.getProjects = () => {
-    for (const [cardId, card] of this.overviewBoard.cards) {
-      this.logger.debug('Processing card ' + card.name + ' (' + cardId + ')');
+    for (const card of this.overviewBoard.cards.values()) {
+      this.logger.debug('Processing card ' + card.name);
       for (const labelId in card.labels) {
         if (card.labels.hasOwnProperty(labelId)) {
           let label = card.labels[labelId];
@@ -145,9 +145,8 @@ function OverviewManager(config, logger, trelloClient, date) {
       for (const list of board.lists) {
         lists[list.id] = list.name;
       }
-
-      for (const [cardId, card] of board.cards) {
-        this.logger.debug('Processing card ' + card.name + ' (' + cardId + ')');
+      for (const card of board.cards.values()) {
+        this.logger.debug('Processing card ' + card.name);
         let actions = this.getActions(card, lists[card.idList]);
         for (const [name, action] of actions) {
           if (projects.has(name)) {
@@ -222,8 +221,8 @@ function OverviewManager(config, logger, trelloClient, date) {
       this.logger.debug('Added checklist ' + name);
 
       // Add all actions.
-      for (const [actionId, action] of actions) {
-        this.logger.debug('Processing action ' + action.name + ' (' + actionId + ')');
+      for (const action of actions.values()) {
+        this.logger.debug('Processing action ' + action.name);
         await this.addCheckItem(checklist.id, action);
       }
     }
@@ -237,8 +236,8 @@ function OverviewManager(config, logger, trelloClient, date) {
    */
   this.updateChecklist = async (cardId, checklist, actions) => {
     let items = new Map();
-    for (const [actionId, action] of actions) {
-      this.logger.debug('Processing action ' + action.name + ' (' + actionId + ')');
+    for (const action of actions.values()) {
+      this.logger.debug('Processing action ' + action.name);
       items.set(action.name, action);
     }
 
@@ -262,8 +261,8 @@ function OverviewManager(config, logger, trelloClient, date) {
     }
 
     // Add new actions.
-    for (const [actionId, action] of items) {
-      this.logger.debug('Processing action ' + action.name + ' (' + actionId + ')');
+    for (const action of items.values()) {
+      this.logger.debug('Processing action ' + action.name);
       await this.addCheckItem(checklist.id, action);
     }
   };
