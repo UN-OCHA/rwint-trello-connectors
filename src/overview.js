@@ -77,7 +77,7 @@ function OverviewManager(config, logger, trelloClient, date) {
     let doers = [];
 
     for (const labelId in card.labels) {
-      if (card.hasOwnProperty(labelId)) {
+      if (card.labels.hasOwnProperty(labelId)) {
         let label = card.labels[labelId];
 
         let projectName = this.getProjectName(label.name);
@@ -97,8 +97,9 @@ function OverviewManager(config, logger, trelloClient, date) {
       }
     }
 
+    // @todo removing actionId will break code.
     for (let [actionId, action] of actions) {
-      this.logger.debug('Processing action ' + actionId);
+      this.logger.debug('Processing action ' + action.name + ' (' + actionId + ')');
       action.doers = doers;
       action.name = this.getActionName(action);
       if (list.toLowerCase().indexOf('done') != -1) {
@@ -114,12 +115,13 @@ function OverviewManager(config, logger, trelloClient, date) {
    */
   this.getProjects = () => {
     for (const [cardId, card] of this.overviewBoard.cards) {
-      this.logger.debug('Processing card ' + cardId);
+      this.logger.debug('Processing card ' + card.name + ' (' + cardId + ')');
       for (const labelId in card.labels) {
-        if (card.hasOwnProperty(labelId)) {
+        if (card.labels.hasOwnProperty(labelId)) {
           let label = card.labels[labelId];
           let projectName = this.getProjectName(label.name);
           if (projectName != '') {
+            // @todo each project can have max 1 card?
             this.projects.set(projectName, {
               card: card,
               actions: new Map(),
@@ -145,7 +147,7 @@ function OverviewManager(config, logger, trelloClient, date) {
       }
 
       for (const [cardId, card] of board.cards) {
-        this.logger.debug('Processing card ' + cardId);
+        this.logger.debug('Processing card ' + card.name + ' (' + cardId + ')');
         let actions = this.getActions(card, lists[card.idList]);
         for (const [name, action] of actions) {
           if (projects.has(name)) {
@@ -221,7 +223,7 @@ function OverviewManager(config, logger, trelloClient, date) {
 
       // Add all actions.
       for (const [actionId, action] of actions) {
-        this.logger.debug('Processing action ' + actionId);
+        this.logger.debug('Processing action ' + action.name + ' (' + actionId + ')');
         await this.addCheckItem(checklist.id, action);
       }
     }
@@ -236,7 +238,7 @@ function OverviewManager(config, logger, trelloClient, date) {
   this.updateChecklist = async (cardId, checklist, actions) => {
     let items = new Map();
     for (const [actionId, action] of actions) {
-      this.logger.debug('Processing action ' + actionId);
+      this.logger.debug('Processing action ' + action.name + ' (' + actionId + ')');
       items.set(action.name, action);
     }
 
@@ -261,7 +263,7 @@ function OverviewManager(config, logger, trelloClient, date) {
 
     // Add new actions.
     for (const [actionId, action] of items) {
-      this.logger.debug('Processing action ' + actionId);
+      this.logger.debug('Processing action ' + action.name + ' (' + actionId + ')');
       await this.addCheckItem(checklist.id, action);
     }
   };
@@ -289,7 +291,7 @@ function OverviewManager(config, logger, trelloClient, date) {
     }
 
     for (const [projectId, project] of this.projects) {
-      this.logger.debug('Updating project' + projectId);
+      this.logger.debug('Updating project ' + projectId);
       let card = project.card;
       for (const checklist of card.checklists) {
         if (boards.has(checklist.name)) {
