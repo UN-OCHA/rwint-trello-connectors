@@ -321,7 +321,7 @@ function OverviewManager(config, logger, trelloClient, date) {
    * Retrieve organization boards.
    */
   this.getBoards = async () => {
-    const boards = await this.trelloClient.get('/organizations/' + this.config.organization + '/boards', {
+    const boards = await this.trelloClient.get('/organizations/' + this.config.trello.organization + '/boards', {
       filter: 'open',
       fields: 'id,name',
       lists: 'open',
