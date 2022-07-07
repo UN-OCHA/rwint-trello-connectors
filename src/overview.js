@@ -245,7 +245,7 @@ function OverviewManager(config, logger, trelloClient, date) {
     }
 
     for (const action of items) {
-      this.addCheckItem(checklist.id, action);
+      await this.addCheckItem(checklist.id, action);
     }
   };
 
