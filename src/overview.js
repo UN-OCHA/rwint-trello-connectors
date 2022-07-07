@@ -290,7 +290,7 @@ function OverviewManager(config, logger, trelloClient, date) {
       }
 
       for (const [checklistName, actions] of project.actions) {
-        this.addChecklist(card.id, checklistName, actions);
+        await this.addChecklist(card.id, checklistName, actions);
       }
     }
   };
