@@ -57,7 +57,7 @@ function OverviewManager(config, logger, trelloClient, date) {
     }
 
     let parts = [
-      action.Link,
+      action.link,
       doers,
       action.Status
     ];
