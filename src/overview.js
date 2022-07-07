@@ -29,8 +29,8 @@ function OverviewManager(config, logger, trelloClient, date) {
    * Get project name.
    */
   this.getProjectName = async (label) => {
-    if (label.indexOf(this.config.projectPrefix) === 0) {
-      return label.substring(this.config.projectPrefix.length);
+    if (label.indexOf(this.config.trello.projectPrefix) === 0) {
+      return label.substring(this.config.trello.projectPrefix.length);
     }
 
     return '';
