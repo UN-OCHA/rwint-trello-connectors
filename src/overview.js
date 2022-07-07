@@ -62,7 +62,7 @@ function OverviewManager(config, logger, trelloClient, date) {
       action.Status
     ];
 
-    if (action.Due != '') {
+    if (action.due != '') {
       parts.push(parts, '*' + action.Due + '*');
     }
 
