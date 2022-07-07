@@ -50,7 +50,7 @@ function OverviewManager(config, logger, trelloClient, date) {
   /**
    * Compute an action name.
    */
-  this.getActionName = async (action) => {
+  this.getActionName = (action) => {
     let doers = '*Not assigned*';
     if (action.Doers.length > 0) {
       doers = '**' + action.Doers.join(', ') + '**';
