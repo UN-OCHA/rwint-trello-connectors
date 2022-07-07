@@ -285,7 +285,7 @@ function OverviewManager(config, logger, trelloClient, date) {
           }
         }
         else {
-          this.deleteChecklist(checklist.id);
+          await this.deleteChecklist(checklist.id);
         }
       }
 
