@@ -275,7 +275,7 @@ function OverviewManager(config, logger, trelloClient, date) {
       let card = project.card;
       for (const checklist of card.checklist) {
         if (boards.has(checklist.name)) {
-          let actions = project.actions[checklist.name];
+          let actions = project.actions.get(checklist.name);
           if (actions) {
             this.updateChecklist(card.id, checklist, actions);
             project.actions.delete(checklist.name);
