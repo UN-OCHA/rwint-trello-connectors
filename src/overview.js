@@ -139,7 +139,7 @@ function OverviewManager(config, logger, trelloClient, date) {
         let actions = this.getActions(card, lists[card.idList]);
         for (const [name, action] of actions) {
           if (projects[name]) {
-            if (!projects.actions[board.name]) {
+            if (!projects.actions.has(board.name)) {
               projects.actions[board.name] = [];
             }
             projects.actions[board.name].push(action);
