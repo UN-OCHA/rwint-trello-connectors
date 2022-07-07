@@ -126,7 +126,7 @@ function OverviewManager(config, logger, trelloClient, date) {
   /**
    * Prepare the data to update the overview board.
    */
-  this.prepare = async () => {
+  this.prepare = () => {
     let projects = this.getProjects();
 
     for (const board of this.boards) {
