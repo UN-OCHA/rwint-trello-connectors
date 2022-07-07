@@ -53,7 +53,7 @@ function OverviewManager(config, logger, trelloClient, date) {
   this.getActionName = (action) => {
     let doers = '*Not assigned*';
     if (action.doers.length > 0) {
-      doers = '**' + action.Doers.join(', ') + '**';
+      doers = '**' + action.doers.join(', ') + '**';
     }
 
     let parts = [
