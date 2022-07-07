@@ -72,7 +72,7 @@ function OverviewManager(config, logger, trelloClient, date) {
   /**
    * Get the projects actions for a card.
    */
-  this.getActions = async (card, list) => {
+  this.getActions = (card, list) => {
     let actions = new Map();
     let doers = [];
 
