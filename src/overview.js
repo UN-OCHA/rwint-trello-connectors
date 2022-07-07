@@ -210,7 +210,7 @@ function OverviewManager(config, logger, trelloClient, date) {
       this.logger.debug('Added checklist ' + name);
 
       for (const action of actions) {
-        this.addCheckItem(checklistId, action);
+        await this.addCheckItem(checklistId, action);
       }
     }
     catch (exception) {
