@@ -40,8 +40,8 @@ function OverviewManager(config, logger, trelloClient, date) {
    * Get doer name.
    */
   this.getDoerName = async (label) => {
-    if (label.indexOf(this.config.doerPrefix) === 0) {
-      return label.substring(this.config.doerPrefix.length);
+    if (label.indexOf(this.config.trello.doerPrefix) === 0) {
+      return label.substring(this.config.trello.doerPrefix.length);
     }
 
     return '';
