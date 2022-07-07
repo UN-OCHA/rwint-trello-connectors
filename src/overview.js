@@ -142,7 +142,7 @@ function OverviewManager(config, logger, trelloClient, date) {
             if (!projects.actions.has(board.name)) {
               projects.actions.set(board.name, []);
             }
-            projects.actions[board.name].push(action);
+            projects.actions.get(board.name).push(action);
           }
         }
       }
