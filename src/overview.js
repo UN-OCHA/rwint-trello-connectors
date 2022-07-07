@@ -79,12 +79,12 @@ function OverviewManager(config, logger, trelloClient, date) {
     for (const label of card.labels) {
       let projectName = this.getProjectName(label.name);
       if (projectName != '') {
-        actions[projectName] = {
+        actions.set(projectName, {
           link: card.ShortUrl,
           status: list,
           due: card.Due,
           complete: false,
-        };
+        });
       }
 
       let doerName = this.getDoerName(label.name);
