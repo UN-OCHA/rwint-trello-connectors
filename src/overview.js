@@ -97,7 +97,7 @@ function OverviewManager(config, logger, trelloClient, date) {
       }
     }
 
-    // @todo removing actionId will break code.
+    // Set action name and status.
     for (let action of actions.values()) {
       action.doers = doers;
       action.name = this.getActionName(action);
