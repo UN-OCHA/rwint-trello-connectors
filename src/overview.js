@@ -333,7 +333,7 @@ function OverviewManager(config, logger, trelloClient, date) {
         this.overviewBoard = board;
       }
       else {
-        this.getBoardData(board, false);
+        await this.getBoardData(board, false);
         this.boards.push(board);
       }
     }
