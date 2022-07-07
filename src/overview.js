@@ -281,7 +281,7 @@ function OverviewManager(config, logger, trelloClient, date) {
             project.actions.delete(checklist.name);
           }
           else {
-            this.deleteChecklist(checklist.id);
+            await this.deleteChecklist(checklist.id);
           }
         }
         else {
