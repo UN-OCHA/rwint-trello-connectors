@@ -63,7 +63,7 @@ function OverviewManager(config, logger, trelloClient, date) {
     ];
 
     if (action.due != '') {
-      parts.push(parts, '*' + action.Due + '*');
+      parts.push(parts, '*' + action.due + '*');
     }
 
     return parts.join(' - ');
