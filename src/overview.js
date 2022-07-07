@@ -7,8 +7,8 @@ function OverviewManager(config, logger, trelloClient, date) {
   this.trelloClient = trelloClient;
 
   this.overviewBoard = null;
-  this.boards = null;
-  this.projects = null;
+  this.boards = [];
+  this.projects = new Map();
 
   /**
    * Main process function.
@@ -28,7 +28,7 @@ function OverviewManager(config, logger, trelloClient, date) {
   /**
    * Get project name.
    */
-  this.getProjectName = async (label) => {
+  this.getProjectName = (label) => {
     if (label.indexOf(this.config.trello.projectPrefix) === 0) {
       return label.substring(this.config.trello.projectPrefix.length);
     }
@@ -39,7 +39,7 @@ function OverviewManager(config, logger, trelloClient, date) {
   /**
    * Get doer name.
    */
-  this.getDoerName = async (label) => {
+  this.getDoerName = (label) => {
     if (label.indexOf(this.config.trello.doerPrefix) === 0) {
       return label.substring(this.config.trello.doerPrefix.length);
     }
@@ -62,7 +62,7 @@ function OverviewManager(config, logger, trelloClient, date) {
       action.status
     ];
 
-    if (action.due != '') {
+    if (action.due) {
       parts.push(parts, '*' + action.due + '*');
     }
 
@@ -76,24 +76,29 @@ function OverviewManager(config, logger, trelloClient, date) {
     let actions = new Map();
     let doers = [];
 
-    for (const label of card.labels) {
-      let projectName = this.getProjectName(label.name);
-      if (projectName != '') {
-        actions.set(projectName, {
-          link: card.ShortUrl,
-          status: list,
-          due: card.Due,
-          complete: false,
-        });
-      }
+    for (const labelId in card.labels) {
+      if (card.hasOwnProperty(labelId)) {
+        let label = card.labels[labelId];
 
-      let doerName = this.getDoerName(label.name);
-      if (doerName != '') {
-        doers.push(doerName);
+        let projectName = this.getProjectName(label.name);
+        if (projectName != '') {
+          actions.set(projectName, {
+            link: card.shortUrl,
+            status: list,
+            due: card.due,
+            complete: false,
+          });
+        }
+
+        let doerName = this.getDoerName(label.name);
+        if (doerName != '') {
+          doers.push(doerName);
+        }
       }
     }
 
-    for (let action of actions) {
+    for (let [actionId, action] of actions) {
+      this.logger.debug('Processing action ' + actionId);
       action.doers = doers;
       action.name = this.getActionName(action);
       if (list.toLowerCase().indexOf('done') != -1) {
@@ -108,14 +113,18 @@ function OverviewManager(config, logger, trelloClient, date) {
    * Get Overview board projects.
    */
   this.getProjects = () => {
-    for (const card of this.overviewBoard.cards) {
-      for (const label of card.labels) {
-        let projectName = this.getProjectName(label.name);
-        if (projectName != '') {
-          this.projects[projectName] = {
-            card: card,
-            actions: new Map(),
-          };
+    for (const [cardId, card] of this.overviewBoard.cards) {
+      this.logger.debug('Processing card ' + cardId);
+      for (const labelId in card.labels) {
+        if (card.hasOwnProperty(labelId)) {
+          let label = card.labels[labelId];
+          let projectName = this.getProjectName(label.name);
+          if (projectName != '') {
+            this.projects.set(projectName, {
+              card: card,
+              actions: new Map(),
+            });
+          }
         }
       }
     }
@@ -135,14 +144,15 @@ function OverviewManager(config, logger, trelloClient, date) {
         lists[list.id] = list.name;
       }
 
-      for (const card of board.card) {
+      for (const [cardId, card] of board.cards) {
+        this.logger.debug('Processing card ' + cardId);
         let actions = this.getActions(card, lists[card.idList]);
         for (const [name, action] of actions) {
-          if (projects[name]) {
-            if (!projects.actions.has(board.name)) {
-              projects.actions.set(board.name, []);
+          if (projects.has(name)) {
+            if (!projects.get(name).actions.has(board.name)) {
+              projects.get(name).actions.set(board.name, new Map());
             }
-            projects.actions.get(board.name).push(action);
+            projects.get(name).actions.get(board.name).set(action.name, action);
           }
         }
       }
@@ -173,8 +183,8 @@ function OverviewManager(config, logger, trelloClient, date) {
       await this.trelloClient.post('/cards/' + cardId + '/checklist/' + checklistId + '/checkItem/' + id, {
         idChecklistCurrent:  checklistId,
         idCheckItem:  id,
-        name:  action.Name,
-        state:  action.Complete,
+        name:  action.name,
+        state:  action.complete,
       });
       this.logger.debug('Updated checkitem ' + id);
     }
@@ -203,14 +213,16 @@ function OverviewManager(config, logger, trelloClient, date) {
    */
   this.addChecklist = async (cardId, name, actions) => {
     try {
-      const checklistId = await this.trelloClient.post('/checklists', {
-        idCart:  cardId,
+      const checklist = await this.trelloClient.post('/checklists', {
+        idCard:  cardId,
         name:  name,
       });
       this.logger.debug('Added checklist ' + name);
 
-      for (const action of actions) {
-        await this.addCheckItem(checklistId, action);
+      // Add all actions.
+      for (const [actionId, action] of actions) {
+        this.logger.debug('Processing action ' + actionId);
+        await this.addCheckItem(checklist.id, action);
       }
     }
     catch (exception) {
@@ -221,22 +233,25 @@ function OverviewManager(config, logger, trelloClient, date) {
   /**
    * Update board checklist: add, update or remove actions.
    */
-  this.updateChecklist = (cardId, checklist, actions) => {
+  this.updateChecklist = async (cardId, checklist, actions) => {
     let items = new Map();
-    for (const action of actions) {
-      items.set(action.link, action);
+    for (const [actionId, action] of actions) {
+      this.logger.debug('Processing action ' + actionId);
+      items.set(action.name, action);
     }
 
     for (const checkitem of checklist.checkItems) {
-      if (checkitem.name.length > 29) {
-        checkitem.name = checkitem.name.slice(0, 29);
-        if (items.has(checkitem.name)) {
-          let action = items.get(checkitem.name);
-          if (action.name != checkitem.name) {
-           await this.updateCheckItem(cardId, checklist.id, checkitem.id, action);
-            items.delete(checkitem.name);
-            continue;
-          }
+      if (items.has(checkitem.name)) {
+        let action = items.get(checkitem.name);
+
+        // Update if name changed.
+        if (action.name != checkitem.name) {
+          await this.updateCheckItem(cardId, checklist.id, checkitem.id, action);
+          items.delete(checkitem.name);
+        }
+        else {
+          // Nothing todo.
+          items.delete(checkitem.name);
         }
       }
       else {
@@ -244,7 +259,9 @@ function OverviewManager(config, logger, trelloClient, date) {
       }
     }
 
-    for (const action of items) {
+    // Add new actions.
+    for (const [actionId, action] of items) {
+      this.logger.debug('Processing action ' + actionId);
       await this.addCheckItem(checklist.id, action);
     }
   };
@@ -271,9 +288,10 @@ function OverviewManager(config, logger, trelloClient, date) {
       boards.set(board.name, true);
     }
 
-    for (const project of this.projects) {
+    for (const [projectId, project] of this.projects) {
+      this.logger.debug('Updating project' + projectId);
       let card = project.card;
-      for (const checklist of card.checklist) {
+      for (const checklist of card.checklists) {
         if (boards.has(checklist.name)) {
           let actions = project.actions.get(checklist.name);
           if (actions) {
@@ -309,7 +327,13 @@ function OverviewManager(config, logger, trelloClient, date) {
     }
 
     try {
-      board.cards = await this.trelloClient.get('/boards/' + board.id + '/cards', data);
+      const cards = await this.trelloClient.get('/boards/' + board.id + '/cards', data);
+      board.cards = new Map();
+      for (const cardId in cards) {
+        if (cards.hasOwnProperty(cardId)) {
+          board.cards.set(cards[cardId].id, cards[cardId]);
+        }
+      }
       this.logger.debug('Loaded board ' + board.id);
     }
     catch (exception) {
