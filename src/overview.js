@@ -309,7 +309,7 @@ function OverviewManager(config, logger, trelloClient, date) {
     }
 
     try {
-      board.cards = await this.trelloClient.get('/boards/' + board.id, data);
+      board.cards = await this.trelloClient.get('/boards/' + board.id + '/cards', data);
       this.logger.debug('Loaded board ' + board.id);
     }
     catch (exception) {
