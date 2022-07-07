@@ -240,7 +240,7 @@ function OverviewManager(config, logger, trelloClient, date) {
         }
       }
       else {
-        this.deleteCheckItem(checklist.id, checkitem.id);
+        await this.deleteCheckItem(checklist.id, checkitem.id);
       }
     }
 
