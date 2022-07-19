@@ -121,7 +121,7 @@ function OverviewManager(config, logger, trelloClient, date) {
           let label = card.labels[labelId];
           let projectName = this.getProjectName(label.name);
           if (projectName != '') {
-            // @todo each project can have max 1 card?
+            // Each project can have max 1 card.
             this.projects.set(projectName, {
               card: card,
               actions: new Map(),
@@ -238,21 +238,25 @@ function OverviewManager(config, logger, trelloClient, date) {
     let items = new Map();
     for (const action of actions.values()) {
       this.logger.debug('Processing action ' + action.name);
-      items.set(action.name, action);
+      items.set(action.link, action);
     }
 
     for (const checkitem of checklist.checkItems) {
       if (items.has(checkitem.name)) {
-        let action = items.get(checkitem.name);
+        let checkItemName = checkitem.name;
+        if (checkItemName.length >= 29) {
+          checkItemName = checkItemName.substring(0, 28);
+        }
+        let action = items.get(checkItemName);
 
         // Update if name changed.
         if (action.name != checkitem.name) {
           await this.updateCheckItem(cardId, checklist.id, checkitem.id, action);
-          items.delete(checkitem.name);
+          items.delete(checkItemName);
         }
         else {
           // Nothing todo.
-          items.delete(checkitem.name);
+          items.delete(checkItemName);
         }
       }
       else {
