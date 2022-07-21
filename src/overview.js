@@ -182,11 +182,11 @@ function OverviewManager(config, logger, trelloClient, date) {
    */
   this.updateCheckItem = async (cardId, checklistId, id, action) => {
     try {
-      await this.trelloClient.post('/cards/' + cardId + '/checklist/' + checklistId + '/checkItem/' + id, {
-        idChecklistCurrent:  checklistId,
-        idCheckItem:  id,
-        name:  action.name,
-        state:  action.complete,
+      await this.trelloClient.put('/cards/' + cardId + '/checklist/' + checklistId + '/checkItem/' + id, {
+        idChecklistCurrent: checklistId,
+        idCheckItem: id,
+        name: action.name,
+        state: action.complete,
       });
       this.logger.debug('Updated checkitem ' + id);
     }
@@ -201,7 +201,7 @@ function OverviewManager(config, logger, trelloClient, date) {
   this.deleteCheckItem = async (checklistId, id) => {
     try {
       await this.trelloClient.delete('/checklists/' + checklistId + '/checkItems/' + id, {
-        idCheckItem:  id,
+        idCheckItem: id,
       });
       this.logger.debug('Deleted checkitem ' + id);
     }
@@ -216,8 +216,8 @@ function OverviewManager(config, logger, trelloClient, date) {
   this.addChecklist = async (cardId, name, actions) => {
     try {
       const checklist = await this.trelloClient.post('/checklists', {
-        idCard:  cardId,
-        name:  name,
+        idCard: cardId,
+        name: name,
       });
       this.logger.debug('Added checklist ' + name);
 
