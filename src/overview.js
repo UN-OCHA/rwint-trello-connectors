@@ -353,21 +353,40 @@ function OverviewManager(config, logger, trelloClient, date) {
   };
 
   /**
+   * Retrieve the overview board.
+   */
+  this.getOverviewBoard = async () => {
+    // Get the overview board ID.
+    const board = await this.trelloClient.get('/boards/' + this.config.trello.boardId, {
+      fields: 'id,name',
+      lists: 'open',
+    });
+
+    await this.getBoardData(board, true);
+    this.overviewBoard = board;
+  };
+
+  /**
    * Retrieve organization boards.
    */
   this.getBoards = async () => {
+    // Retrieve the overview board.
+    this.getOverviewBoard();
+
+    // Retrieve the organization boards.
     const boards = await this.trelloClient.get('/organizations/' + this.config.trello.organization + '/boards', {
       filter: 'open',
       fields: 'id,name',
       lists: 'open',
     });
 
+    // Get the list of board to skip, including the overview board.
+    const excludedBoards = this.config.trello.excludedBoards || [];
+    excludedBoards.push(this.config.trello.boardId);
+
+    // Get the lists and cards for the boards to monitor.
     for (let board of boards) {
-      if (board.id == this.config.trello.boardId) {
-        await this.getBoardData(board, true);
-        this.overviewBoard = board;
-      }
-      else {
+      if (!excludedBoards.includes(board.id)) {
         await this.getBoardData(board, false);
         this.boards.push(board);
       }

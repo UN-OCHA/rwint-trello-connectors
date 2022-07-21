@@ -4,9 +4,12 @@
     "url": "https://api.trello.com/1",
     "key": "TRELLO_API_KEY",
     "token": "TRELLO_API_TOKEN",
-    "boardId": "TRELLO_COUNTRY_OVERVIEW_BOARD_ID",
+    "boardId": "TRELLO_OVERVIEW_BOARD_ID",
     "organization": "reliefweb",
     "projectPrefix": "Project: ",
-    "doerPrefix": "Doer: "
+    "doerPrefix": "Doer: ",
+    "excludedBoards": [
+      "SOME_TRELLO_BOARD_ID"
+    ]
   }
 }
