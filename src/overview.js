@@ -237,29 +237,34 @@ function OverviewManager(config, logger, trelloClient, date) {
    */
   this.updateChecklist = async (cardId, checklist, actions) => {
     let items = new Map();
+    // Map the actions with their link which acts as identifier. It's indeed
+    // the constant part of the checklist items.
+    // @see getActionName().
     for (const action of actions.values()) {
-      this.logger.debug('Processing action ' + action.name);
+      this.logger.debug('Processing action ' + action.link);
       items.set(action.link, action);
     }
 
     for (const checkitem of checklist.checkItems) {
-      if (items.has(checkitem.name)) {
-        let checkItemName = checkitem.name;
-        if (checkItemName.length >= 29) {
-          checkItemName = checkItemName.substring(0, 28);
-        }
-        let action = items.get(checkItemName);
+      // Extract the card shortURL (action link) from the check item name.
+      // @see getActionName().
+      const link = checkitem.name.substring(0, 29);
+
+      // Update the check list item if the corresponding action has changed.
+      if (items.has(link)) {
+        let action = items.get(link);
 
         // Update if name changed.
         if (action.name != checkitem.name) {
           await this.updateCheckItem(cardId, checklist.id, checkitem.id, action);
-          items.delete(checkItemName);
+          items.delete(link);
         }
-        else {
-          // Nothing todo.
-          items.delete(checkItemName);
-        }
+
+        // Remove the action from the list so it's not processed when adding
+        // new actions below.
+        items.delete(link);
       }
+      // Otherwise, if there is no corresponding action, remove the item.
       else {
         await this.deleteCheckItem(checklist.id, checkitem.id);
       }
