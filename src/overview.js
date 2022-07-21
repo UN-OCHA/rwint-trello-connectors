@@ -103,7 +103,7 @@ function OverviewManager(config, logger, trelloClient, date) {
       action.doers = doers;
       action.name = this.getActionName(action);
       this.logger.debug('Processing action ' + action.name);
-      if (list.toLowerCase().indexOf('done') != -1) {
+      if (list && list.toLowerCase().indexOf('done') != -1) {
         action.complete = true;
       }
     }
