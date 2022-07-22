@@ -337,7 +337,7 @@ function CountryManager(config, logger, trelloClient, rwapiClient, date) {
     // Update the description.
     if (country.description !== '') {
       if (card.description !== country.description) {
-        card.set('desc', this.generateCardDescription(country));
+        data.set('desc', this.generateCardDescription(country));
         this.logger.debug('Update description for ' + country.name);
       }
     }
