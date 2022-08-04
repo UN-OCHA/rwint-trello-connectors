@@ -713,7 +713,7 @@ function DisasterManager(config, logger, trelloClient, rwapiClient, date) {
 /**
  * Execute logic.
  */
-const config = JSON.parse(process.env.CONFIG);
+const config = require(process.env.CONFIG);
 
 const Logger = require('./libs/logger.js').Logger;
 const logger = new Logger(config.debug);

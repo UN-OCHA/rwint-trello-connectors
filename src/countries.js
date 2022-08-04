@@ -337,7 +337,7 @@ function CountryManager(config, logger, trelloClient, rwapiClient, date) {
     // Update the description.
     if (country.description !== '') {
       if (card.description !== country.description) {
-        card.set('desc', this.generateCardDescription(country));
+        data.set('desc', this.generateCardDescription(country));
         this.logger.debug('Update description for ' + country.name);
       }
     }
@@ -403,7 +403,7 @@ function CountryManager(config, logger, trelloClient, rwapiClient, date) {
 /**
  * Execute logic.
  */
-const config = JSON.parse(process.env.CONFIG);
+const config = require(process.env.CONFIG);
 
 const Logger = require('./libs/logger.js').Logger;
 const logger = new Logger(config.debug);

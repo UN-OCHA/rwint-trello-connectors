@@ -1,5 +1,5 @@
 {
-  "name": "ReliefWeb Trello Connectors",
+  "name": "reliefweb-trello-connectors",
   "version": "0.0.0",
   "description": "NodeJs scripts (with no dependencies) used to manage ReliefWeb Trello boards",
   "repository": "git@github.com:UN-OCHA/rwint-trello-connectors.git",
@@ -13,8 +13,7 @@
     "node": "^18",
     "npm": "^8"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "eslint": "^7.23.0"
   }
