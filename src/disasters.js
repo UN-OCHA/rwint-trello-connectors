@@ -563,7 +563,7 @@ function DisasterManager(config, logger, trelloClient, rwapiClient, date) {
     // Update the card name if necessary.
     if (card.name !== disaster.name) {
       this.logger.debug('Updated name of card ' + card.name);
-      data.set('name', 'disaster.name');
+      data.set('name', disaster.name);
     }
 
     // If the disaster profile changed, set the new update date.
