@@ -23,9 +23,9 @@ function TopicManager(config, logger, trelloClient, rwapiClient, date) {
   this.resourcePattern = /<a[^>]*href="([^"]+)"[^>]*>([^<]+)</g;
 
   // @todo retrieve the string from the config?
-  this.lastUpdateOlderThan2Months = 'Last Report > 2 Months';
-  this.lastUpdateOlderThan1Month = 'Last Report > 1 Month';
-  this.lastUpdateOlderThan1Week = 'Last Report > 1 Week';
+  this.lastUpdateOlderThan2Months = 'Last Update > 2 Months';
+  this.lastUpdateOlderThan1Month = 'Last Update > 1 Month';
+  this.lastUpdateOlderThan1Week = 'Last Update > 1 Week';
 
   // Map of the positions of the status lists to help sorting the topics.
   this.statusPositions = new Map(this.config.lists.map(item => [item.status, item.position]));
@@ -117,7 +117,7 @@ function TopicManager(config, logger, trelloClient, rwapiClient, date) {
     topic.statusPosition = this.statusPositions.get(topic.status) || 0;
 
     // Get the last update (changed date).
-    topic.lastUpdate = this.date.create(topic.date.changed).format(this.lastUpdateFormat);
+    topic.lastUpdate = this.date.clone(topic.date.changed).format(this.lastUpdateFormat);
 
     const rivers = new Map();
     const sections = new Map();
@@ -384,7 +384,7 @@ function TopicManager(config, logger, trelloClient, rwapiClient, date) {
     }
 
     // Get the number of days since the last update.
-    const days = this.date.diffDays(topic.changed);
+    const days = this.date.diffDays(topic.date.changed);
 
     // Last update.
     if (days > 60) {
