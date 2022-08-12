@@ -4,7 +4,7 @@
     "url": "https://api.trello.com/1",
     "key": "TRELLO_API_KEY",
     "token": "TRELLO_API_TOKEN",
-    "boardId": "TRELLO_DISASTER_OVERVIEW_BOARD_ID"
+    "boardId": "TRELLO_TOPIC_OVERVIEW_BOARD_ID"
   },
   "rwapi": {
     "url": "https://api.reliefweb.int.test/v1",
