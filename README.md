@@ -3,8 +3,9 @@ ReliefWeb Trello Connectors
 
 NodeJs scripts (with no dependencies) used to manage ReliefWeb Trello Boards.
 
+- [Countries](src/countries.js): Connector for the **Country Oveview** Trello board, using data from the ReliefWeb API. This board is to ease monitoring and maintaining countries with an ongoing humanitarian situation.
 - [Disasters](src/disasters.js): Connector for the **Disaster Oveview** Trello board, using data from the ReliefWeb API. This board is to ease monitoring and maintaining draft, alert and ongoing disasters.
-- [Countries](src/countries.js): Connector for the **Disaster Oveview** Trello board, using data from the ReliefWeb API. This board is to ease monitoring and maintaining countries with an ongoing humanitarian situation.
+- [Topics](src/topics.js): Connector for the **Topic Oveview** Trello board, using data from the ReliefWeb API. This board is to ease monitoring and maintaining ReliefWeb's topics.
 - [Overview](src/overview.js): Connector for the **Overview** Trello board using only data from Trello. This board is used to monitor the activity in other boards.
 
 Configuration
