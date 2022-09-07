@@ -1,0 +1,40 @@
+{
+  "debug": true,
+  "trello": {
+    "url": "https://api.trello.com/1",
+    "key": "TRELLO_API_KEY",
+    "token": "TRELLO_API_TOKEN",
+    "boardId": "TRELLO_TOPIC_OVERVIEW_BOARD_ID"
+  },
+  "rwapi": {
+    "url": "https://api.reliefweb.int.test/v1",
+    "appname": "rwint-trello-connectors--topics",
+    "preset": "reliefweb"
+  },
+  "labels": {
+    "Featured": "green",
+    "Draft": "sky",
+    "Published": "blue",
+    "Archived": "purple",
+    "Last Update > 1 Week": "yellow",
+    "Last Update > 1 Month": "orange",
+    "Last Update > 2 Months": "red"
+  },
+  "lists": [
+    {
+      "status": "draft",
+      "name": "Draft",
+      "position": 2
+    },
+    {
+      "status": "published",
+      "name": "Published",
+      "position": 3
+    },
+    {
+      "status": "archive",
+      "name": "Archived",
+      "position": 4
+    }
+  ]
+}

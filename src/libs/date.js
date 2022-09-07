@@ -7,7 +7,7 @@ function DateWrapper(date, options = {}) {
     months: options.months || ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     weekDays: options.weekDays || ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     utc: typeof options.utc !== 'undefined' ? options.utc === true : true,
-    formats: options.formats || /(YYYY|YY|MMMM|MMM|MM|M|DDDD|DDD|DD|D|dddd|ddd|dd|d)/g
+    formats: options.formats || /(YYYY|YY|MMMM|MMM|MM|M|DDDD|DDD|DD|D|dddd|ddd|dd|d|hh|mm|ss)/g
   };
 
   // Placeholder for the inner javascript object.
@@ -212,6 +212,18 @@ function DateWrapper(date, options = {}) {
 
       case 'd':
         return this.get('day');
+
+      case 'hh':
+        var hours = this.get('hours');
+        return (hours < 10 ? '0' : '') + hours;
+
+      case 'mm':
+        var minutes = this.get('minutes');
+        return (minutes < 10 ? '0' : '') + minutes;
+
+      case 'ss':
+        var seconds = this.get('seconds');
+        return (seconds < 10 ? '0' : '') + seconds;
     }
   };
 
