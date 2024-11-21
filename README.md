@@ -11,9 +11,9 @@ NodeJs scripts (with no dependencies) used to manage ReliefWeb Trello Boards.
 Configuration
 -------------
 
-The scripts need some configuration. This can should be passed using the `CONFIG` environment variable.
+The scripts need some configuration. This is defined in a JSON file, whose path should be passed using the `CONFIG` environment variable.
 
-Ex: `CONFIG=$(cat config/countries.config.json) node src/countries.js`
+Ex: `CONFIG=../config/countries.config.json node src/countries.js`
 
 The `config` directory contains examples that just need to the Trello API crendentials and board ID.
 
@@ -22,7 +22,7 @@ Docker
 
 1. Clone the repository somewhere and `cd` to it.
 2. Edit the config file.
-3. Run the script with something like `docker run --rm -v "$(pwd)/src:/tmp" -e CONFIG="$(cat config/countries.config.json)" node:latest node /tmp/countries.js`
+3. Run the script with something like `docker run --rm -v "$(pwd)/src:/tmp" -v "$(pwd)/config/countries.config.json:/tmp/countries.config.json" -e CONFIG=/tmp/countries.config.json node:latest node /tmp/countries.js`
 
 Development
 -----------
